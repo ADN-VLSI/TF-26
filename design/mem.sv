@@ -1,0 +1,25 @@
+// Simple memory: synchronous write, combinational read.
+module mem #(
+    parameter int ADDR_WIDTH = 8,  // address width (depth = 2^ADDR_WIDTH)
+    parameter int DATA_WIDTH = 32  // data width per entry
+) (
+    input  logic                  clk_i,    // clock for writes
+    input  logic [ADDR_WIDTH-1:0] waddr_i,  // write address
+    input  logic [DATA_WIDTH-1:0] wdata_i,  // write data
+    input  logic                  we_i,     // write enable (synchronous)
+    input  logic [ADDR_WIDTH-1:0] raddr_i,  // read address
+    output logic [DATA_WIDTH-1:0] rdata_o   // read data (combinational)
+);
+
+  // Memory array: indexed by address, each entry is DATA_WIDTH bits
+  logic [DATA_WIDTH-1:0] mem_reg[2**ADDR_WIDTH];
+
+  // Combinational read from memory
+  always_comb rdata_o = mem_reg[raddr_i];
+
+  // Synchronous write on rising clock when write-enable is asserted
+  always_ff @(posedge clk_i) begin
+    if (we_i) mem_reg[waddr_i] <= wdata_i;
+  end
+
+endmodule
