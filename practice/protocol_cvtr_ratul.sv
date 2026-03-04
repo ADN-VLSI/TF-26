@@ -117,9 +117,9 @@ module protocol_cvtr_ratul #(
       APB_EN: begin
         psel_o    = 1'b1;
         penable_o = 1'b1;
-        if (c_wenable && pready_i) begin
+        if (pwrite_o && pready_i) begin
           next_state = SEND_B;
-        end else if (~c_wenable && pready_i) begin
+        end else if (~pwrite_o && pready_i) begin
           next_state = SEND_R;
         end
       end

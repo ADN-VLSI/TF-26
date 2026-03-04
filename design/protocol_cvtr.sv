@@ -117,8 +117,8 @@ module protocol_cvtr #(
       APB_EN: begin
         psel_o = 1'b1;
         penable_o = 1'b1;
-        if (p_ready_i) begin
-          if (c_wenable) begin
+        if (pready_i) begin
+          if (pwrite_o) begin
             next_state = SEND_B;
           end else begin
             next_state = SEND_R;
@@ -175,7 +175,7 @@ module protocol_cvtr #(
   end
 
   always_ff @(posedge clk_i) begin
-    if (p_ready_i & ~c_wenable) begin
+    if (pready_i & ~pwrite_o) begin
       r_data_o   <= prdata_i;
       b_slverr_o <= pslverr_i;
     end
