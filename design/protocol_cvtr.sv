@@ -82,19 +82,63 @@ module protocol_cvtr #(
 
     next_state = current_state;
     c_ready_o  = 1'b0;
+    w_ready_o  = 1'b0;
+    r_valid_o  = 1'b0;
+    b_valid_o  = 1'b0;
+
+    psel_o    = 1'b0;
+    penable_o = 1'b0;
 
     case (current_state)
 
       GET_C: begin
         c_ready_o = 1'b1;
-        if (c_wenable_i && c_valid_i) begin
-          next_state = GET_W;
-        end else if (~c_wenable_i && c_valid_i) begin
+        if (c_valid_i) begin
+          if (c_wenable_i) begin
+            next_state = GET_W;
+          end else if (~c_wenable_i) begin
+            next_state = APB_SEL;
+          end
+        end
+      end
+
+      GET_W: begin
+        w_ready_o = 1'b1;
+        if (w_valid_i) begin
           next_state = APB_SEL;
         end
       end
 
-      // TODO ASSIGNMENT
+      APB_SEL: begin
+        psel_o = 1'b1;
+        next_state = APB_EN;
+      end
+
+      APB_EN: begin
+        psel_o = 1'b1;
+        penable_o = 1'b1;
+        if (p_ready_i) begin
+          if (c_wenable) begin
+            next_state = SEND_B;
+          end else begin
+            next_state = SEND_R;
+          end
+        end
+      end
+
+      SEND_R: begin
+        r_valid_o = 1'b1;
+        if (r_ready_i) begin
+          next_state = SEND_B;
+        end
+      end
+
+      SEND_B: begin
+        b_valid_o = 1'b1;
+        if (b_ready_i) begin
+          next_state = GET_C;
+        end
+      end
 
       default: begin
         next_state = GET_C;
@@ -112,6 +156,28 @@ module protocol_cvtr #(
       current_state <= GET_C;
     end else begin
       current_state <= next_state;
+    end
+  end
+
+  // SKIPPING RESET FOR POWER SAVING + UNNECESSARY FOR THIS SIGNAL
+  always_ff @(posedge clk_i) begin
+    if (c_valid_i & c_ready_o) begin
+      paddr_o  <= c_addr_i;
+      pwrite_o <= c_wenable_i;
+    end
+  end
+
+  always_ff @(posedge clk_i) begin
+    if (w_valid_i & w_ready_o) begin
+      pwdata_o <= w_data_i;
+      pstrb_o  <= w_strb_i;
+    end
+  end
+
+  always_ff @(posedge clk_i) begin
+    if (p_ready_i & ~c_wenable) begin
+      r_data_o   <= prdata_i;
+      b_slverr_o <= pslverr_i;
     end
   end
 

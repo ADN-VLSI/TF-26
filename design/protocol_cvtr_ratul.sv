@@ -102,17 +102,18 @@ module protocol_cvtr_ratul #(
         end
       end
 
-      // TODO ASSIGNMENT
       GET_W: begin
         w_ready_o = 1'b1;
         if (w_valid_i) begin
           next_state = APB_SEL;
         end
       end
+
       APB_SEL: begin
         psel_o    = 1'b1;
         next_state = APB_EN;
       end
+
       APB_EN: begin
         psel_o    = 1'b1;
         penable_o = 1'b1;
@@ -122,12 +123,14 @@ module protocol_cvtr_ratul #(
           next_state = SEND_R;
         end
       end
+
       SEND_R: begin
         r_valid_o = 1'b1;
         if (r_ready_i) begin
           next_state = SEND_B;
         end
       end
+
       SEND_B: begin
         b_valid_o = 1'b1;
         if (b_ready_i) begin
