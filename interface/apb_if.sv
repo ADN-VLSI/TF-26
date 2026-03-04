@@ -45,9 +45,7 @@ interface apb_if #(
                                 input logic [DATA_WIDTH/8-1:0] write_strobe,
                                 output logic [DATA_WIDTH-1:0] read_data);
 
-    $display("REQUESTING KEY AT %0t", $realtime);
     apb_sema.get(1);
-    $display("GOT KEY AT %0t", $realtime);
 
     // TODO Solve misalignment issue for non-edge aligned accesses
     if (!clk_i) @(posedge clk_i);
@@ -71,9 +69,7 @@ interface apb_if #(
     // Capture read data
     read_data = prdata;
 
-    $display("RELEASING KEY AT %0t", $realtime);
     apb_sema.put(1);
-    $display("KEY RELEASED AT %0t", $realtime);
 
     // Deassert signals
     psel    <= '0;
