@@ -1,4 +1,4 @@
-interface apb_if #(
+interface ci_if #(
     parameter int ADDR_WIDTH = 8,
     parameter int DATA_WIDTH = 32
 ) (
