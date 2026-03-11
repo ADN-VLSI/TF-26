@@ -1,4 +1,4 @@
-module apb_cov_tb;
+module apb_cov_ratul;
 
   initial $display("\033[7;38m APB COVERAGE TEST STARTED \033[0m");
   final $display("\033[7;38m  APB COVERAGE TEST ENDED  \033[0m");
