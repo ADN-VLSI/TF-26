@@ -1,0 +1,15 @@
+///4) 4-bit Comparator 
+///RTL 
+module comparator4bit( 
+input  logic [3:0] a, 
+input  logic [3:0] b, 
+output logic eq, 
+output logic gt, 
+output logic lt 
+); 
+always_comb begin 
+eq = (a==b); 
+gt = (a>b); 
+lt = (a<b); 
+end 
+endmodule
