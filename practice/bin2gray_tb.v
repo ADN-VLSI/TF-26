@@ -15,4 +15,5 @@ module bin2gray_tb;
     $finish;
   end
 endmodule
+
   
