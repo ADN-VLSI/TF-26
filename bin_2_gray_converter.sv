@@ -1,5 +1,5 @@
 module bin2gray #(
-    parameter N = 4   // Width of the binary input
+    parameter int N = 4   // Width of the binary input
 )(
     input  logic [N-1:0] bin,   // Binary input
     output logic [N-1:0] gray   // Gray code output
