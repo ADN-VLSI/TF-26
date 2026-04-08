@@ -1,23 +1,25 @@
 module uart_receiver #(
     parameter int CLK_FREQ = 16000000, // 16 MHz
-    parameter int BAUD_RATE = 1000000, // 1 Mbps
     parameter int DATA_BITS = 8,
     parameter int OVERSAMPLE = 16
 ) (
     input logic clk,
     input logic rst_n,
+    input logic [15:0] baud_div,
     input logic rx,
     output logic [DATA_BITS-1:0] data_out,
     output logic data_valid
 );
 
-localparam int BIT_PERIOD = CLK_FREQ / BAUD_RATE; // 16
-logic [$clog2(BIT_PERIOD)-1:0] clk_cnt;
+logic [15:0] bit_period;
+logic [$clog2(CLK_FREQ)-1:0] clk_cnt;
 logic [$clog2(OVERSAMPLE)-1:0] sample_cnt;
 logic receiving;
 logic [DATA_BITS-1:0] shift_reg;
 logic [$clog2(DATA_BITS)-1:0] bit_cnt;
 logic [1:0] state; // 0: idle, 1: start, 2: data, 3: stop
+
+assign bit_period = (baud_div == 16'd0) ? 16'd1 : baud_div;
 
 always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -32,7 +34,7 @@ always_ff @(posedge clk or negedge rst_n) begin
         data_valid <= 0;
         if (receiving) begin
             clk_cnt <= clk_cnt + 1;
-            if (clk_cnt == BIT_PERIOD - 1) begin
+            if (clk_cnt == bit_period - 1) begin
                 clk_cnt <= 0;
                 sample_cnt <= sample_cnt + 1;
                 if (sample_cnt == OVERSAMPLE - 1) begin
