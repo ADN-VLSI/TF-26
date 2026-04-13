@@ -103,7 +103,8 @@ module uart_tb;
     string test;
 
     if (!$value$plusargs("TEST=%s", test)) begin
-      $fatal(1, "\033[1;31mERROR: No test specified. Use +test=<TEST_NAME> to specify a test.\033[0m");
+      $fatal(1,
+             "\033[1;31mERROR: No test specified. Use +test=<TEST_NAME> to specify a test.\033[0m");
     end
 
     $timeformat(-6, 0, "us");
@@ -122,16 +123,64 @@ module uart_tb;
         write_read_check(INTR_CTRL_ADDR, 4);
       end
 
+      "TX": begin
+        automatic string dut_tx_msg = "Hello World!";
+        automatic string intf_rx_msg = "";
+        fork
+
+          begin  // intf_receiver_block
+            automatic bit [7:0] rx_byte;
+            automatic bit rx_parity_out;
+            forever begin
+              uart_intf.recv_rx(rx_byte, rx_parity_out, 1000000, 0, 0, 0, 8);
+              $sformat(intf_rx_msg, "%s%s", intf_rx_msg, rx_byte);
+            end
+            $display("RX DONE");
+          end
+
+          begin  // dut_transmitter_block
+            apb_intf.write(CTRL_ADDR, 'b110);  // flush all
+            apb_intf.write(CTRL_ADDR, 'b000);  // disable flush
+            apb_intf.write(CLK_DIV_ADDR, 'd100);  // set clock divider
+            apb_intf.write(CTRL_ADDR, 'b001);  // enable clock
+            for (int i = 0; i < dut_tx_msg.len(); i++) begin
+              apb_intf.write(TX_DATA_ADDR, dut_tx_msg[i]);
+            end
+            $display("WATING TX DONE");
+            uart_intf.wait_till_idle();
+            $display("TX DONE");
+          end
+
+        join_any
+
+        if (dut_tx_msg != intf_rx_msg) begin
+          $display("DUT  TX: %s", dut_tx_msg);
+          $display("INTF RX: %s", intf_rx_msg);
+          $fatal(1, "\033[1;31mTEST FAILED\033[0m");
+        end
+      end
+
       default: begin
         $fatal(1, "\033[1;31mERROR: Unknown test '%s'\033[0m", test);
       end
 
     endcase
 
-
     $display("\033[1;32mTEST PASSED\033[0m");
 
     $finish;
+
+  end
+
+  initial begin
+    fork
+      forever begin
+        #10us;
+        $display("%0t", $realtime);
+      end
+    join_none
+    #10ms;
+    $fatal(1, "\033[1;31mTEST TIMED OUT\033[0m");
   end
 
 endmodule
