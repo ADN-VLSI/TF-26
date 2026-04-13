@@ -45,7 +45,17 @@ clean:
 
 .PHONY: all
 all:
+	@make -s compile
+	@make -s simulate TEST=$(TEST)
+
+.PHONY: compile
+compile:
+	@make -s clean
 	@make -s $(BUILD)
 	@cd $(BUILD) && xvlog -sv $(FL)
 	@cd $(BUILD) && xelab uart_tb -s top
-	@cd $(BUILD) && xsim top -runall
+
+.PHONY: simulate
+simulate:
+	@echo "--testplusarg TEST=$(TEST)" > $(BUILD)/sim_args
+	@cd $(BUILD) && xsim top -f $(BUILD)/sim_args -runall

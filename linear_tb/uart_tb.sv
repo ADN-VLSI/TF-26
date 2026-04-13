@@ -67,12 +67,44 @@ module uart_tb;
       .irq_rx_valid(irq_rx_valid)
   );
 
+  task automatic write_read_check(input int addr, input int bit_count);
+    logic [31:0] rdata;
+    bit OK;
+    OK = 1;
+
+    apb_intf.write(addr, '0);
+    apb_intf.read(addr, rdata);
+    if (rdata !== '0) begin
+      OK = 0;
+      $display("ERROR: Expected reset value 0x0, got 0x%h", rdata);
+    end else begin
+      apb_intf.write(addr, '1);
+      apb_intf.read(addr, rdata);
+      for (int i = 0; i < 32; i++) begin
+        if (rdata[i] !== (i < bit_count)) begin
+          OK = 0;
+          $display("ERROR: Bit %0d did not set correctly, got 0b%b", i, rdata[i]);
+          break;
+        end
+      end
+    end
+
+    if (!OK) begin
+      $display("FAILURE: Address 0x%h failed write-read check", addr);
+      $fatal(1, "\033[1;31mTEST FAILED\033[0m");
+    end
+  endtask
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // PROCEDURAL BLOCKS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   initial begin
-    int rdata;
+    string test;
+
+    if (!$value$plusargs("TEST=%s", test)) begin
+      $fatal(1, "\033[1;31mERROR: No test specified. Use +test=<TEST_NAME> to specify a test.\033[0m");
+    end
 
     $timeformat(-6, 0, "us");
     $dumpfile("uart_tb.vcd");
@@ -81,8 +113,23 @@ module uart_tb;
     ctrl_intf.apply_reset();
     ctrl_intf.enable_clock();
 
-    apb_intf.read(CLK_DIV_ADDR, rdata);
-    $display("CLK_DIV :: 0x%h", rdata);
+    case (test)
+
+      "RWA": begin
+        write_read_check(CTRL_ADDR, 3);
+        write_read_check(CLK_DIV_ADDR, 32);
+        write_read_check(CFG_ADDR, 3);
+        write_read_check(INTR_CTRL_ADDR, 4);
+      end
+
+      default: begin
+        $fatal(1, "\033[1;31mERROR: Unknown test '%s'\033[0m", test);
+      end
+
+    endcase
+
+
+    $display("\033[1;32mTEST PASSED\033[0m");
 
     $finish;
   end
