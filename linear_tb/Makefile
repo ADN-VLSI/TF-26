@@ -3,6 +3,8 @@ export SHELL=/bin/bash
 export T202602=$(realpath ..)
 export APB_UART=$(T202602)/submodule/apb-uart
 
+FL += -i $(T202602)/linear_tb
+
 FL += $(APB_UART)/pkg/apb_uart_pkg.sv
 FL += $(APB_UART)/pkg/uart_tx_pkg.sv
 FL += $(APB_UART)/pkg/uart_rx_pkg.sv
@@ -30,9 +32,19 @@ FL += $(APB_UART)/rtl/uart_rx.sv
 FL += $(APB_UART)/rtl/uart_tx_fsm.sv
 FL += $(APB_UART)/rtl/uart_tx.sv
 FL += $(APB_UART)/rtl/uart_top.sv
+
 FL += $(T202602)/linear_tb/uart_tb.sv
 
 BUILD := $(T202602)/build
+
+GUI := 0
+
+ifneq ($(GUI),0)
+	SIM_ARGS += --gui
+else
+	SIM_ARGS += --runall
+endif
+
 
 $(BUILD):
 	@echo "Creating build directory at $@"
@@ -58,4 +70,5 @@ compile:
 .PHONY: simulate
 simulate:
 	@echo "--testplusarg TEST=$(TEST)" > $(BUILD)/sim_args
+	@echo "$(SIM_ARGS)" >> $(BUILD)/sim_args
 	@cd $(BUILD) && xsim top -f $(BUILD)/sim_args -runall

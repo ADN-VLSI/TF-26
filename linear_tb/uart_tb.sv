@@ -99,6 +99,8 @@ module uart_tb;
   // PROCEDURAL BLOCKS
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
+  `include "uart_rx_testcases.sv"
+
   initial begin
     string test;
 
@@ -172,7 +174,7 @@ module uart_tb;
             apb_intf.write(CTRL_ADDR, 'b001);  // enable clock
             #1us;  // wait for setup
             for (int i = 0; i < intf_tx_msg.len(); i++) begin
-              uart_intf.send_tx(intf_tx_msg[i], 0, 0, 0, 8);  // send byte with no parity
+              uart_intf.send_tx(intf_tx_msg[i], 1000000, 0, 0, 0, 8);
             end
             $display("INTF TX DONE");
           end
@@ -195,6 +197,8 @@ module uart_tb;
           end
 
         join_any
+
+        uart_intf.wait_till_idle();
 
         if (intf_tx_msg != dut_rx_msg) begin
           $display("INTF TX: %s", intf_tx_msg);
@@ -219,7 +223,7 @@ module uart_tb;
     fork
       forever begin
         #10us;
-        $display("%0t", $realtime);
+        $display("  %0t       \033[1A\033[0G", $realtime);
       end
     join_none
     #10ms;
