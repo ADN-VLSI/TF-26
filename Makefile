@@ -4,7 +4,7 @@ TOP := hello
 
 SEED := 0
 
-COV := 1
+COV := 0
 
 ROOT_DIR := $(CURDIR)
 
@@ -32,4 +32,6 @@ all:
 	@cd build && xelab $(TOP) -s $(TOP)_sim --O0 -debug all $(EWHL)
 	@echo "--testplusarg seed=$(SEED)" > build/xsim_args
 	@cd build && xsim $(TOP)_sim -runall -sv_seed $(SEED) -f xsim_args $(EWHL)
+ifneq ($(COV),0)
 	@cd build && xcrg -report_format html
+endif
