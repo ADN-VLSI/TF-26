@@ -160,6 +160,49 @@ module uart_tb;
         end
       end
 
+      "RX": begin
+        automatic string intf_tx_msg = "Hello World!";
+        automatic string dut_rx_msg = "";
+        fork
+
+          begin  // intf_transmitter_block
+            apb_intf.write(CTRL_ADDR, 'b110);  // flush all
+            apb_intf.write(CTRL_ADDR, 'b000);  // disable flush
+            apb_intf.write(CLK_DIV_ADDR, 'd100);  // set clock divider
+            apb_intf.write(CTRL_ADDR, 'b001);  // enable clock
+            #1us;  // wait for setup
+            for (int i = 0; i < intf_tx_msg.len(); i++) begin
+              uart_intf.send_tx(intf_tx_msg[i], 0, 0, 0, 8);  // send byte with no parity
+            end
+            $display("INTF TX DONE");
+          end
+
+          begin  // dut_receiver_block
+            automatic bit [7:0] rx_byte;
+            automatic logic [31:0] rx_count;
+            automatic logic [31:0] rdata;
+            forever begin
+              apb_intf.read(RX_FIFO_COUNT_ADDR, rx_count);
+              if (rx_count > 0) begin
+                apb_intf.read(RX_DATA_ADDR, rdata);
+                rx_byte = rdata[7:0];
+                $sformat(dut_rx_msg, "%s%s", dut_rx_msg, rx_byte);
+              end else begin
+                #100ns;
+              end
+            end
+            $display("DUT RX DONE");
+          end
+
+        join_any
+
+        if (intf_tx_msg != dut_rx_msg) begin
+          $display("INTF TX: %s", intf_tx_msg);
+          $display("DUT  RX: %s", dut_rx_msg);
+          $fatal(1, "\033[1;31mTEST FAILED\033[0m");
+        end
+      end
+
       default: begin
         $fatal(1, "\033[1;31mERROR: Unknown test '%s'\033[0m", test);
       end
