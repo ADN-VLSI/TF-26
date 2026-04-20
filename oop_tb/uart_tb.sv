@@ -60,8 +60,6 @@ module uart_tb;
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   initial begin
-    automatic apb_seq_item seq_item;
-    automatic apb_rsp_item rsp_item;
 
     $dumpfile("uart_tb.vcd");
     $dumpvars(0, uart_tb);
@@ -79,12 +77,25 @@ module uart_tb;
 
     ctrl_intf.enable_clock();
     dvr.run();
+    mon.run();
 
-    seq_item = new();
-    seq_item.randomize();
-    apb_dvr_mbx.put(seq_item);
+    begin
+      automatic apb_seq_item seq_item;
+      seq_item = new();
+      seq_item.randomize();
+      apb_dvr_mbx.put(seq_item);
+      seq_item = new seq_item;
+      seq_item.write = 0;
+      apb_dvr_mbx.put(seq_item);
+    end
 
-    #1us;
+    mon.wait_till_idle();
+
+    while (apb_mon_mbx.num()) begin
+      apb_rsp_item item;
+      apb_mon_mbx.get(item);
+      item.print();
+    end
 
     $finish;
   end

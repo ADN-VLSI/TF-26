@@ -20,21 +20,22 @@ class apb_driver;
 
   task automatic run();
     apb_seq_item item;
+
     fork
+
       forever begin
         mbx.peek(item);
-      
         if (item.write) begin
           intf.write(item.addr, item.data);
         end else begin
           logic [31:0] read_data;
           intf.read(item.addr, read_data);
         end
-
         mbx.get(item);
-
       end
+
     join_none
+
   endtask
 
 endclass
