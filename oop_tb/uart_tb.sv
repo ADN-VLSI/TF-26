@@ -207,7 +207,7 @@ module uart_tb;
                 end
 
                 `RX_DATA_ADDR: begin
-                  if (item.data[7:0] == rx_q[0]) begin
+                  if (item.data[7:0] !== rx_q[0]) begin
                     $error("RX data mismatch! Expected 0x%0h (%b) but got 0x%0h (%b)", rx_q[0],
                            rx_q[0], item.data[7:0], item.data[7:0]);
                     fail++;
@@ -238,24 +238,28 @@ module uart_tb;
         forever begin  // UART INTF
           uart_rsp_item item;
           uart_mon_mbx.get(item);
-          item.print();
 
           if (item.intf_tx) begin  // TB TX -> DUT RX
             rx_q.push_back(item.data);
             if (debug)
-              $display("\033[1;32mReceived 0x%0h (%s) by UART\033[0m", item.data, item.data);
+              $display(
+                  "\033[1;32mReceived 0x%0h (%s) by UART\033[0m %0t",
+                  item.data,
+                  item.data,
+                  $realtime
+              );
 
           end else begin  // DUT TX -> TB RX
 
-              if (tx_q[0] !== item.data) begin
-                $error("TX data mismatch! Expected 0x%0h but got 0x%0h", tx_q[0], item.data);
-                fail++;
-              end else begin
-                if (debug)
-                  $display("\033[1;32mTransmitted 0x%0h (%s) from DUT\033[0m", item.data, item.data);
-                pass++;
-              end
-              tx_q.delete(0);
+            if (tx_q[0] !== item.data) begin
+              $error("TX data mismatch! Expected 0x%0h but got 0x%0h", tx_q[0], item.data);
+              fail++;
+            end else begin
+              if (debug)
+                $display("\033[1;32mTransmitted 0x%0h (%s) from DUT\033[0m", item.data, item.data);
+              pass++;
+            end
+            tx_q.delete(0);
 
           end
         end
