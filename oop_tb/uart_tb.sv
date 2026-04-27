@@ -208,15 +208,17 @@ module uart_tb;
 
                 `RX_DATA_ADDR: begin
                   if (item.data[7:0] !== rx_q[0]) begin
+                    for (int i = 7; i >= 0 ; i--) begin
+                      $write("\033[1;3%0dm%b:%b\033[0m  ", (item.data[i] !== rx_q[0][i] ? 2 : 1),
+                             item.data[i], rx_q[0][i]);
+                    end
                     $error("RX data mismatch! Expected 0x%0h (%b) but got 0x%0h (%b)", rx_q[0],
                            rx_q[0], item.data[7:0], item.data[7:0]);
                     fail++;
                   end else begin
                     if (debug) begin
-                      $display("\033[1;35mRead 0x%0h (%s) from RX FIFO <<\033[0m", item.data[7:0],
+                      $display("\033[1;35mRead 0x%0h (%s) from RX FIFO\033[0m", item.data[7:0],
                                item.data[7:0]);
-                      $display("\033[1;35m|||| 0x%0h (%s)\033[0m", rx_q[0],
-                               rx_q[0]);  // TODO REMOVE
                     end
                     pass++;
                   end

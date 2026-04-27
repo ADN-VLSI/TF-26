@@ -3,6 +3,8 @@ export SHELL=/bin/bash
 export T202602=$(realpath ..)
 export APB_UART=$(T202602)/submodule/apb-uart
 
+TOP := uart_tb
+
 FL += -i $(T202602)/oop_tb
 
 FL += $(APB_UART)/pkg/apb_uart_pkg.sv
@@ -34,6 +36,7 @@ FL += $(APB_UART)/rtl/uart_tx.sv
 FL += $(APB_UART)/rtl/uart_top.sv
 
 FL += $(T202602)/oop_tb/uart_tb.sv
+FL += $(T202602)/oop_tb/uart_vip_tb.sv
 
 BUILD := $(T202602)/build
 
@@ -67,7 +70,7 @@ compile:
 	@make -s clean
 	@make -s $(BUILD)
 	@cd $(BUILD) && xvlog -sv $(FL) $(EWHL)
-	@cd $(BUILD) && xelab uart_tb -debug all -s top $(EWHL)
+	@cd $(BUILD) && xelab $(TOP) -debug all -s top $(EWHL)
 
 .PHONY: simulate
 simulate:

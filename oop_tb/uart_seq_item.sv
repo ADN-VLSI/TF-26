@@ -21,8 +21,8 @@ class uart_seq_item;
 
   virtual function string to_string();
     return $sformatf(
-        "UART SEQ ITEM: data=0x%0h, baud_rate=%0d, parity_enable=%b, parity_type=%b, second_stop_bit=%b, data_bits=%0d",
-        data, baud_rate, parity_enable, parity_type, second_stop_bit, data_bits);
+        "UART SEQ ITEM: data=0x%0h (%s), baud_rate=%0d, parity_enable=%b, parity_type=%b, second_stop_bit=%b, data_bits=%0d",
+        data, data, baud_rate, parity_enable, parity_type, second_stop_bit, data_bits);
   endfunction
 
   virtual function void print();
