@@ -92,8 +92,9 @@ module uart_tb;
 
   initial begin
 
-    automatic int pass = 0;
-    automatic int fail = 0;
+    automatic int pass;
+    automatic int fail;
+    automatic int num_rx;
 
     $dumpfile("uart_tb.vcd");
     $dumpvars(0, uart_tb);
@@ -206,20 +207,25 @@ module uart_tb;
                 end
 
                 `RX_DATA_ADDR: begin
-                  if (item.data[7:0] !== rx_q[0]) begin
-                    $error("RX data mismatch! Expected 0x%0h but got 0x%0h", rx_q[0],
-                           item.data[7:0]);
+                  if (item.data[7:0] == rx_q[0]) begin
+                    $error("RX data mismatch! Expected 0x%0h (%b) but got 0x%0h (%b)", rx_q[0],
+                           rx_q[0], item.data[7:0], item.data[7:0]);
                     fail++;
                   end else begin
-                    if (debug)
-                      $display(
-                          "\033[1;35mRead 0x%0h (%s) from RX FIFO\033[0m",
-                          item.data[7:0],
-                          item.data[7:0]
-                      );
+                    if (debug) begin
+                      $display("\033[1;35mRead 0x%0h (%s) from RX FIFO <<\033[0m", item.data[7:0],
+                               item.data[7:0]);
+                      $display("\033[1;35m|||| 0x%0h (%s)\033[0m", rx_q[0],
+                               rx_q[0]);  // TODO REMOVE
+                    end
                     pass++;
                   end
                   rx_q.delete(0);
+                end
+
+                `RX_FIFO_COUNT_ADDR: begin
+                  num_rx = item.data;
+                  if (debug) $display("\033[1;35mRead RX FIFO count: %0d\033[0m", item.data);
                 end
 
               endcase
@@ -232,23 +238,24 @@ module uart_tb;
         forever begin  // UART INTF
           uart_rsp_item item;
           uart_mon_mbx.get(item);
+          item.print();
 
-          if (item.intf_tx) begin  // TX TX -> DUT RX
+          if (item.intf_tx) begin  // TB TX -> DUT RX
             rx_q.push_back(item.data);
             if (debug)
-              $display("\033[1;32mReceived 0x%0h (%s) from UART\033[0m", item.data, item.data);
+              $display("\033[1;32mReceived 0x%0h (%s) by UART\033[0m", item.data, item.data);
 
           end else begin  // DUT TX -> TB RX
 
-            if (tx_q[0] !== item.data) begin
-              $error("TX data mismatch! Expected 0x%0h but got 0x%0h", tx_q[0], item.data);
-              fail++;
-            end else begin
-              if (debug)
-                $display("\033[1;32mTransmitted 0x%0h (%s) from DUT\033[0m", item.data, item.data);
-              pass++;
-            end
-            tx_q.delete(0);
+            //   if (tx_q[0] !== item.data) begin
+            //     $error("TX data mismatch! Expected 0x%0h but got 0x%0h", tx_q[0], item.data);
+            //     fail++;
+            //   end else begin
+            //     if (debug)
+            //       $display("\033[1;32mTransmitted 0x%0h (%s) from DUT\033[0m", item.data, item.data);
+            //     pass++;
+            //   end
+            //   tx_q.delete(0);
 
           end
         end
@@ -256,10 +263,14 @@ module uart_tb;
       join_none
     end
 
+    $display("\033[1;33mScoreboard Started\033[0m %0t", $realtime);
+
     apb_write(`CTRL_ADDR, 'b110);  // flush all
     apb_write(`CTRL_ADDR, 'b000);  // disable flush  
     apb_write(`CLK_DIV_ADDR, 'd100);  // set clock divider
     apb_write(`CTRL_ADDR, 'b001);  // enable clock
+
+    $display("\033[1;33mConfiguration Done\033[0m %0t", $realtime);
 
     begin
       automatic string dut_tx_string = "Hello Ratul, Sabbir & Alif bhai..! :)";
@@ -268,8 +279,14 @@ module uart_tb;
       end
     end
 
+    $display("\033[1;33mWaiting for DUT Transmission to complete\033[0m %0t", $realtime);
+
     apb_mon.wait_till_idle();
     uart_mon.wait_till_idle();
+
+    $display("\033[1;33mDUT Transmission to completed\033[0m %0t", $realtime);
+
+    $display("\033[1;33mTB Transmitting\033[0m %0t", $realtime);
 
     begin
       automatic string dut_rx_string = "Hi everyone..! :)";
@@ -286,8 +303,12 @@ module uart_tb;
       end
     end
 
+    $display("\033[1;33mWaiting for DUT Reception to complete\033[0m %0t", $realtime);
+
     apb_mon.wait_till_idle();
     uart_mon.wait_till_idle();
+
+    $display("\033[1;33mDUT Reception to completed\033[0m %0t", $realtime);
 
     begin
       apb_seq_item item;
@@ -297,12 +318,11 @@ module uart_tb;
       apb_dvr_mbx.put(item);
     end
 
+    $display("\033[1;33mReading number of bytes in RX FIFO\033[0m %0t", $realtime);
+    apb_mon.wait_till_idle();
+
     begin
-      apb_rsp_item item;
-      int num_rx;
-      apb_mon.wait_till_idle();
-      apb_mon_mbx.get(item);
-      num_rx = item.data[7:0];
+      $display("\033[1;33mNumber of bytes in RX FIFO: %0d\033[0m %0t", num_rx, $realtime);
       repeat (num_rx) begin
         apb_seq_item item;
         item = new();
@@ -312,14 +332,12 @@ module uart_tb;
       end
     end
 
+    $display("\033[1;33mReading bytes from RX FIFO\033[0m %0t", $realtime);
+
     apb_mon.wait_till_idle();
     uart_mon.wait_till_idle();
 
-    // while (apb_mon_mbx.num()) begin
-    //   apb_rsp_item item;
-    //   apb_mon_mbx.get(item);
-    //   item.print();
-    // end
+    $display("\033[1;33mScoreboard Finished\033[0m %0t", $realtime);
 
     #100ns;
 

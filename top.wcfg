@@ -15,18 +15,211 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
-      <ZoomEndTime time="1,300.001 ns"></ZoomEndTime>
-      <Cursor1Time time="1,300.000 ns"></Cursor1Time>
+      <ZoomStartTime time="625,006.500 ns"></ZoomStartTime>
+      <ZoomEndTime time="625,442.501 ns"></ZoomEndTime>
+      <Cursor1Time time="625,162.500 ns"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="164"></NameColumnWidth>
-      <ValueColumnWidth column_width="70"></ValueColumnWidth>
+      <NameColumnWidth column_width="163"></NameColumnWidth>
+      <ValueColumnWidth column_width="108"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="5" />
-   <wvobject fp_name="group12" type="group">
+   <wvobject fp_name="group14" type="group">
+      <obj_property name="label">DUT</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/uart_tb/dut/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/psel_i" type="logic">
+         <obj_property name="ElementShortName">psel_i</obj_property>
+         <obj_property name="ObjectShortName">psel_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/penable_i" type="logic">
+         <obj_property name="ElementShortName">penable_i</obj_property>
+         <obj_property name="ObjectShortName">penable_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/paddr_i" type="array">
+         <obj_property name="ElementShortName">paddr_i[4:0]</obj_property>
+         <obj_property name="ObjectShortName">paddr_i[4:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/pwrite_i" type="logic">
+         <obj_property name="ElementShortName">pwrite_i</obj_property>
+         <obj_property name="ObjectShortName">pwrite_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/pwdata_i" type="array">
+         <obj_property name="ElementShortName">pwdata_i[31:0]</obj_property>
+         <obj_property name="ObjectShortName">pwdata_i[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/pstrb_i" type="array">
+         <obj_property name="ElementShortName">pstrb_i[3:0]</obj_property>
+         <obj_property name="ObjectShortName">pstrb_i[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/pready_o" type="logic">
+         <obj_property name="ElementShortName">pready_o</obj_property>
+         <obj_property name="ObjectShortName">pready_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/prdata_o" type="array">
+         <obj_property name="ElementShortName">prdata_o[31:0]</obj_property>
+         <obj_property name="ObjectShortName">prdata_o[31:0]</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/pslverr_o" type="logic">
+         <obj_property name="ElementShortName">pslverr_o</obj_property>
+         <obj_property name="ObjectShortName">pslverr_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/rx_i" type="logic">
+         <obj_property name="ElementShortName">rx_i</obj_property>
+         <obj_property name="ObjectShortName">rx_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/tx_o" type="logic">
+         <obj_property name="ElementShortName">tx_o</obj_property>
+         <obj_property name="ObjectShortName">tx_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group23" type="group">
+      <obj_property name="label">RX</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/uart_tb/dut/u_rx/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/clk_i" type="logic">
+         <obj_property name="ElementShortName">clk_i</obj_property>
+         <obj_property name="ObjectShortName">clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/rx_i" type="logic">
+         <obj_property name="ElementShortName">rx_i</obj_property>
+         <obj_property name="ObjectShortName">rx_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/parity_en_i" type="logic">
+         <obj_property name="ElementShortName">parity_en_i</obj_property>
+         <obj_property name="ObjectShortName">parity_en_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/parity_type_i" type="logic">
+         <obj_property name="ElementShortName">parity_type_i</obj_property>
+         <obj_property name="ObjectShortName">parity_type_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/data_o" type="array">
+         <obj_property name="ElementShortName">data_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_o[7:0]</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/data_valid_o" type="logic">
+         <obj_property name="ElementShortName">data_valid_o</obj_property>
+         <obj_property name="ObjectShortName">data_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx/parity_error_o" type="logic">
+         <obj_property name="ElementShortName">parity_error_o</obj_property>
+         <obj_property name="ObjectShortName">parity_error_o</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group35" type="group">
+      <obj_property name="label">RX FIFO</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/arst_ni" type="logic">
+         <obj_property name="ElementShortName">arst_ni</obj_property>
+         <obj_property name="ObjectShortName">arst_ni</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_in_i" type="array">
+         <obj_property name="ElementShortName">elem_in_i[7:0]</obj_property>
+         <obj_property name="ObjectShortName">elem_in_i[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_in_clk_i" type="logic">
+         <obj_property name="ElementShortName">elem_in_clk_i</obj_property>
+         <obj_property name="ObjectShortName">elem_in_clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_in_valid_i" type="logic">
+         <obj_property name="ElementShortName">elem_in_valid_i</obj_property>
+         <obj_property name="ObjectShortName">elem_in_valid_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_in_ready_o" type="logic">
+         <obj_property name="ElementShortName">elem_in_ready_o</obj_property>
+         <obj_property name="ObjectShortName">elem_in_ready_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_in_count_o" type="array">
+         <obj_property name="ElementShortName">elem_in_count_o[8:0]</obj_property>
+         <obj_property name="ObjectShortName">elem_in_count_o[8:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_out_o" type="array">
+         <obj_property name="ElementShortName">elem_out_o[7:0]</obj_property>
+         <obj_property name="ObjectShortName">elem_out_o[7:0]</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_out_clk_i" type="logic">
+         <obj_property name="ElementShortName">elem_out_clk_i</obj_property>
+         <obj_property name="ObjectShortName">elem_out_clk_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_out_valid_o" type="logic">
+         <obj_property name="ElementShortName">elem_out_valid_o</obj_property>
+         <obj_property name="ObjectShortName">elem_out_valid_o</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_out_ready_i" type="logic">
+         <obj_property name="ElementShortName">elem_out_ready_i</obj_property>
+         <obj_property name="ObjectShortName">elem_out_ready_i</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/dut/u_rx_fifo/elem_out_count_o" type="array">
+         <obj_property name="ElementShortName">elem_out_count_o[8:0]</obj_property>
+         <obj_property name="ObjectShortName">elem_out_count_o[8:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group47" type="group">
+      <obj_property name="label">UART IF</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/uart_tb/uart_intf/tx" type="logic">
+         <obj_property name="ElementShortName">tx</obj_property>
+         <obj_property name="ObjectShortName">tx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/rx" type="logic">
+         <obj_property name="ElementShortName">rx</obj_property>
+         <obj_property name="ObjectShortName">rx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/BAUD_RATE" type="array">
+         <obj_property name="ElementShortName">BAUD_RATE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">BAUD_RATE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/PARITY_ENABLE" type="logic">
+         <obj_property name="ElementShortName">PARITY_ENABLE</obj_property>
+         <obj_property name="ObjectShortName">PARITY_ENABLE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/PARITY_TYPE" type="logic">
+         <obj_property name="ElementShortName">PARITY_TYPE</obj_property>
+         <obj_property name="ObjectShortName">PARITY_TYPE</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/SECOND_STOP_BIT" type="logic">
+         <obj_property name="ElementShortName">SECOND_STOP_BIT</obj_property>
+         <obj_property name="ObjectShortName">SECOND_STOP_BIT</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/DATA_BITS" type="array">
+         <obj_property name="ElementShortName">DATA_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_BITS[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/drive_tx" type="logic">
+         <obj_property name="ElementShortName">drive_tx</obj_property>
+         <obj_property name="ObjectShortName">drive_tx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/reg_tx" type="logic">
+         <obj_property name="ElementShortName">reg_tx</obj_property>
+         <obj_property name="ObjectShortName">reg_tx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/drive_rx" type="logic">
+         <obj_property name="ElementShortName">drive_rx</obj_property>
+         <obj_property name="ObjectShortName">drive_rx</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/uart_intf/reg_rx" type="logic">
+         <obj_property name="ElementShortName">reg_rx</obj_property>
+         <obj_property name="ObjectShortName">reg_rx</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group62" type="group">
       <obj_property name="label">APB IF</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/uart_tb/apb_intf/arst_ni" type="logic">
          <obj_property name="ElementShortName">arst_ni</obj_property>
          <obj_property name="ObjectShortName">arst_ni</obj_property>
@@ -66,26 +259,28 @@
       <wvobject fp_name="/uart_tb/apb_intf/prdata" type="array">
          <obj_property name="ElementShortName">prdata[31:0]</obj_property>
          <obj_property name="ObjectShortName">prdata[31:0]</obj_property>
+         <obj_property name="Radix">ASCIIRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/apb_intf/prdata" type="array">
+         <obj_property name="ElementShortName">prdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">prdata[31:0]</obj_property>
+         <obj_property name="Radix">HEXRADIX</obj_property>
       </wvobject>
       <wvobject fp_name="/uart_tb/apb_intf/pslverr" type="logic">
          <obj_property name="ElementShortName">pslverr</obj_property>
          <obj_property name="ObjectShortName">pslverr</obj_property>
       </wvobject>
-   </wvobject>
-   <wvobject type="divider" fp_name="divider13">
-      <obj_property name="label">REMOVE</obj_property>
-      <obj_property name="DisplayName">label</obj_property>
-   </wvobject>
-   <wvobject fp_name="/uart_tb/dut/u_uart_regif/ctrl_reg_o" type="array">
-      <obj_property name="ElementShortName">ctrl_reg_o</obj_property>
-      <obj_property name="ObjectShortName">ctrl_reg_o</obj_property>
-   </wvobject>
-   <wvobject fp_name="/uart_tb/dut/u_uart_regif/clk_div_reg_o" type="array">
-      <obj_property name="ElementShortName">clk_div_reg_o</obj_property>
-      <obj_property name="ObjectShortName">clk_div_reg_o</obj_property>
-   </wvobject>
-   <wvobject fp_name="/uart_tb/dut/u_uart_regif/cfg_reg_o" type="array">
-      <obj_property name="ElementShortName">cfg_reg_o</obj_property>
-      <obj_property name="ObjectShortName">cfg_reg_o</obj_property>
+      <wvobject fp_name="/uart_tb/apb_intf/is_edge_aligned" type="logic">
+         <obj_property name="ElementShortName">is_edge_aligned</obj_property>
+         <obj_property name="ObjectShortName">is_edge_aligned</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/apb_intf/ADDR_WIDTH" type="array">
+         <obj_property name="ElementShortName">ADDR_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ADDR_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/uart_tb/apb_intf/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      </wvobject>
    </wvobject>
 </wave_config>
