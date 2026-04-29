@@ -43,7 +43,7 @@ BUILD := $(T202602)/build
 
 GUI := 0
 
-EWHL := | grep -iE "Error:|Warning:|" --color=auto
+EWHL := | sed "s/.*XSIM 43-4468.*//g" | sed "s/.*VRFC 10-8827.*//g" | grep -iE "Error:|Warning:|" --color=auto
 
 ifneq ($(GUI),0)
 	SIM_ARGS += --gui

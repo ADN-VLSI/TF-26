@@ -37,6 +37,9 @@ class base_test extends uvm_test;
     super.run_phase(phase);
     phase.raise_objection(this);
     uvm_top.print_topology();
+    $display("");
+    uvm_config_db::dump();
+    $display("");
     phase.drop_objection(this);
   endtask
 
