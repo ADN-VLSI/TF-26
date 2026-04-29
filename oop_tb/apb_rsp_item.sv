@@ -3,6 +3,9 @@
 
 class apb_rsp_item extends apb_seq_item;
 
+  // rand bit [31:0] addr;
+  // rand bit        write;
+  // rand bit [31:0] data;
   bit slverr;
 
   virtual function string to_string();

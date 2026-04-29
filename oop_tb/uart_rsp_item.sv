@@ -5,6 +5,12 @@
 
 class uart_rsp_item extends uart_seq_item;
 
+  // rand logic [7:0] data;
+  // rand int         baud_rate       = 115200;
+  // rand bit         parity_enable   = 0;
+  // rand bit         parity_type     = 1;  // 0=even, 1=odd
+  // rand bit         second_stop_bit = 0;
+  // rand int         data_bits       = 8;
   logic parity;
   bit   intf_tx;
 
