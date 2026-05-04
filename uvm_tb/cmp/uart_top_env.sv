@@ -15,9 +15,14 @@ class uart_top_env extends uvm_env;
   // Constructor for the environment
   function new(string name = "uart_top_env", uvm_component parent = null);
     super.new(name, parent);
+  endfunction : new
+
+  // Build phase
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
     apb  = apb_agent::type_id::create("apb", this);
     uart = uart_agent::type_id::create("uart", this);
-  endfunction : new
+  endfunction
 
 endclass
 

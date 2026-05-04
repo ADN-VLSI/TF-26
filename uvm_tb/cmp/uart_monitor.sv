@@ -9,8 +9,15 @@ class uart_monitor extends uvm_monitor;
 
   virtual uart_if uart_intf;
 
+  uvm_analysis_port #(uart_rsp_item) ap;
+
   function new(string name = "uart_monitor", uvm_component parent = null);
     super.new(name, parent);
+  endfunction
+
+  function void build_phase(uvm_phase phase);
+    super.build_phase(phase);
+    ap = new("ap", this);
   endfunction
 
   function void connect_phase(uvm_phase phase);
