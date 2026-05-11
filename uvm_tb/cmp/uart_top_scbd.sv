@@ -3,6 +3,7 @@
 `define __GUARD_UART_TOP_SCBD_SV__ 0
 
 // Include response item classes
+`include "addr_def.sv"
 `include "obj/apb_rsp_item.sv"
 `include "obj/uart_rsp_item.sv"
 
@@ -22,6 +23,11 @@ class uart_top_scbd extends uvm_scoreboard;
 
   // UVM component utilities for factory registration
   `uvm_component_utils(uart_top_scbd)
+
+  virtual uart_if uart_intf;
+
+  int pass_count;
+  int fail_count;
 
   // Analysis implementation ports for receiving items from monitors
   uvm_analysis_imp_apb #(apb_rsp_item, uart_top_scbd) m_analysis_imp_apb;
@@ -53,6 +59,18 @@ class uart_top_scbd extends uvm_scoreboard;
     // uart_cg   = new();
     // apb_cg    = new();
     // reg_cg    = new();
+  endfunction
+
+  // Connect phase: retrieve virtual interfaces from configuration
+  function void connect_phase(uvm_phase phase);
+    super.connect_phase(phase);
+
+    if (!uvm_config_db#(virtual uart_if)::get(
+            uvm_root::get(), "uart", "uart_intf", uart_intf
+        )) begin
+      `uvm_fatal("NOVIF", "Virtual interface 'uart_intf' not found in config DB")
+    end
+
   endfunction
 
   // Write function for APB analysis port: store APB items
@@ -94,57 +112,59 @@ class uart_top_scbd extends uvm_scoreboard;
     end
   endfunction
 
-  // // Run phase: process APB items and perform comparisons
-  // task run_phase(uvm_phase phase);
-  //   forever begin
-  //     apb_rsp_item apb_item;
-  //     // Wait for APB items in the queue
-  //     wait (apb_q.size());
-  //     apb_item = apb_q.pop_front();
-  //     // Handle different APB addresses and operations
-  //     if (apb_item.pwrite == 1 && apb_item.paddr == 4) begin
-  //       // Set baud rate configuration
-  //       uvm_config_db#(int)::set(uvm_root::get(), "uart", "baud_rate", (100000000 / apb_item.pwdata));
-  //     end else if (apb_item.pwrite == 1 && apb_item.paddr == 8) begin
-  //       // Set parity configuration
-  //       void'(uvm_config_db#(bit)::get(uvm_root::get(), "uart", "parity_type", apb_item.pwdata[1]));
-  //       void'(uvm_config_db#(bit)::get(uvm_root::get(), "uart", "parity_enable", apb_item.pwdata[0]));
-  //       void'(uvm_config_db#(bit)::get(
-  //           uvm_root::get(), "uart", "second_stop_bit", apb_item.pwdata[2]
-  //       ));
-  //     end else if (apb_item.pwrite == 1 && apb_item.paddr == 'h14) begin
-  //       // Compare TX data
-  //       byte data;
-  //       wait (uart_tx_q.size());
-  //       data = uart_tx_q.pop_front();
-  //       if (data == apb_item.pwdata[7:0]) begin
-  //         status_cg.sample(1);
-  //         `uvm_info(get_type_name(), $sformatf("TX Data Match: 0x%0h", data), UVM_HIGH)
-  //       end else begin
-  //         status_cg.sample(0);
-  //         `uvm_error(get_type_name(), $sformatf(
-  //                    "TX Data Mismatch: APB 0x%0h, UART 0x%0h", apb_item.pwdata[7:0], data))
-  //       end
-  //     end else if (apb_item.pwrite == 0 && apb_item.paddr == 'h18) begin
-  //       // Compare RX data
-  //       byte data;
-  //       wait (uart_rx_q.size());
-  //       data = uart_rx_q.pop_front();
-  //       if (data == apb_item.prdata[7:0]) begin
-  //         status_cg.sample(1);
-  //         `uvm_info(get_type_name(), $sformatf("RX Data Match: 0x%0h", data), UVM_HIGH)
-  //       end else begin
-  //         status_cg.sample(0);
-  //         `uvm_error(get_type_name(), $sformatf(
-  //                    "RX Data Mismatch: UART 0x%0h, APB 0x%0h", data, apb_item.prdata[7:0]))
-  //       end
-  //     end
-  //   end
+  // Run phase: process APB items and perform comparisons
+  task run_phase(uvm_phase phase);
+    forever begin
+      apb_rsp_item apb_item;
+      // Wait for APB items in the queue
+      wait (apb_q.size());
+      apb_item = apb_q.pop_front();
+      // Handle different APB addresses and operations
+      if (apb_item.slverr == 0 && apb_item.write == 1 && apb_item.addr == `CLK_DIV_ADDR) begin
+        // Set baud rate configuration
+        uart_intf.BAUD_RATE = (100_000_000 / apb_item.data);
+      end else if (apb_item.slverr == 0 && apb_item.write == 1 && apb_item.addr == `CFG_ADDR) begin
+        // Set parity configuration
+        uart_intf.PARITY_ENABLE   = apb_item.data[0];
+        uart_intf.PARITY_TYPE     = apb_item.data[1];
+        uart_intf.SECOND_STOP_BIT = apb_item.data[2];
+      end else if (apb_item.slverr == 0 && apb_item.write == 1 && apb_item.addr == `TX_DATA_ADDR) begin
+        // Compare TX data
+        byte data;
+        wait (uart_tx_q.size());
+        data = uart_tx_q.pop_front();
+        if (data == apb_item.data[7:0]) begin
+          // status_cg.sample(1);
+          pass_count++;
+          `uvm_info(get_type_name(), $sformatf("TX Data Match: 0x%0h", data), UVM_HIGH)
+        end else begin
+          // status_cg.sample(0);
+          fail_count++;
+          `uvm_error(get_type_name(), $sformatf(
+                     "TX Data Mismatch: APB 0x%0h, UART 0x%0h", apb_item.data[7:0], data))
+        end
+      end else if (apb_item.slverr == 0 && apb_item.write == 0 && apb_item.addr == `RX_DATA_ADDR) begin
+        // Compare RX data
+        byte data;
+        wait (uart_rx_q.size());
+        data = uart_rx_q.pop_front();
+        if (data == apb_item.data[7:0]) begin
+          // status_cg.sample(1);
+          pass_count++;
+          `uvm_info(get_type_name(), $sformatf("RX Data Match: 0x%0h", data), UVM_HIGH)
+        end else begin
+          // status_cg.sample(0);
+          fail_count++;
+          `uvm_error(get_type_name(), $sformatf(
+                     "RX Data Mismatch: UART 0x%0h, APB 0x%0h", data, apb_item.data[7:0]))
+        end
+      end
+    end
 
-  // endtask
+  endtask
 
-  // // Report phase: display test results
-  // function void report_phase(uvm_phase phase);
+  // Report phase: display test results
+  function void report_phase(uvm_phase phase);
   //   `uvm_info(get_type_name(), $sformatf("---- Coverage Summary ----"), UVM_NONE)
   //   `uvm_info(get_type_name(), $sformatf("apb     : %0.2f%%", apb_cg.get_coverage()), UVM_NONE)
   //   `uvm_info(get_type_name(), $sformatf("uart    : %0.2f%%", uart_cg.get_coverage()), UVM_NONE)
@@ -157,7 +177,12 @@ class uart_top_scbd extends uvm_scoreboard;
   //   end else begin
   //     `uvm_info(get_type_name(), "Test PASSED", UVM_NONE)
   //   end
-  // endfunction
+
+  `uvm_info(get_type_name(), $sformatf("Total Pass: %0d, Total Fail: %0d", pass_count, fail_count), UVM_NONE)
+
+  if (fail_count) `uvm_error(get_type_name(), "\033[1;31mTest FAILED\033[0m]")
+  else `uvm_info(get_type_name(), "\033[1;32mTest PASSED\033[0m]", UVM_NONE)
+  endfunction
 
 endclass
 

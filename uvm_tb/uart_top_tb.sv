@@ -3,6 +3,7 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 
 `include "test/base_test.sv"
+`include "test/basic_test.sv"
 
 module uart_top_tb;
 
