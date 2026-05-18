@@ -14,27 +14,23 @@ class basic_uart_rx_seq extends uvm_sequence #(apb_seq_item);
   task body();
     apb_seq_item item;
     string expected_msg = "Hello World!\n";
-    int num_reads = expected_msg.len();  // 13 bytes for "Hello World!\n"
-    byte received_data[13];
+    string received_msg = "";
 
-    // Read RX data from the UART RX FIFO
-    `uvm_info("RX_SEQ", $sformatf("Reading %0d bytes from RX FIFO", num_reads), UVM_MEDIUM)
-    
-    for(int i = 0; i < num_reads; i++) begin
+    // Read received data
+    for(int i = 0; i < expected_msg.len(); i++) begin
       `uvm_do_with(req, {req.addr == `RX_DATA_ADDR; req.write == 0;})
-      // Capture the data from response
-      if ($cast(item, req)) begin
-        received_data[i] = item.data[7:0];
-        `uvm_info("RX_SEQ", $sformatf("Read byte[%0d]: %c (0x%02h)", i, received_data[i], received_data[i]), UVM_LOW)
-      end
+      received_msg = {received_msg, req.data[7:0]};
     end
 
-    // Display received message
-    `uvm_info("RX_SEQ", "Received message:", UVM_MEDIUM)
-    for(int i = 0; i < num_reads; i++) begin
-      $write("%c", received_data[i]);
+    
+    `uvm_info(get_type_name(), $sformatf("Received message: %s", received_msg), UVM_LOW)
+
+    //check
+    if (received_msg == expected_msg) begin
+      `uvm_info(get_type_name(), "RX data matches expected TX data", UVM_LOW)
+    end else begin
+      `uvm_error(get_type_name(), $sformatf("RX data mismatch! Expected: %s, Received: %s", expected_msg, received_msg))
     end
-    $write("\n");
 
   endtask
 
