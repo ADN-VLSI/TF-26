@@ -3,6 +3,8 @@
 
 `include "test/base_test.sv"
 `include "seq/basic_uart_tx_seq.sv"
+`include "seq/basic_uart_rx_seq.sv"
+`include "seq/uart_disable_seq.sv"
 
 class basic_test extends base_test;
 
@@ -14,10 +16,23 @@ class basic_test extends base_test;
 
   task main_phase(uvm_phase phase);
     basic_uart_tx_seq tx_seq;
+    basic_uart_rx_seq rx_seq;
+    uart_disable_seq  disable_seq;
     phase.raise_objection(this);
     super.main_phase(phase);
+    
+    // Transmit data
     tx_seq = basic_uart_tx_seq::type_id::create("tx_seq");
     tx_seq.start(env.apb.sqr);
+    
+    // Receive data
+    rx_seq = basic_uart_rx_seq::type_id::create("rx_seq");
+    rx_seq.start(env.apb.sqr);
+    
+    // Disable UART
+    disable_seq = uart_disable_seq::type_id::create("disable_seq");
+    disable_seq.start(env.apb.sqr);
+    
     phase.drop_objection(this);
   endtask
 
